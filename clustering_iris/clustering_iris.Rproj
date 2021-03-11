@@ -1,0 +1,7 @@
+#View(iris)
+iris[1:4]->iris_k
+#View(iris_k)
+as.matrix(iris_k)->iris_k
+kmeans(iris_k,3)->k
+cbind(iris,k$cluster)->clustered_data
+View(clustered_data)
