@@ -1,0 +1,13 @@
+read.csv("C:/Users/Lenovo/Desktop/SUV_Purchase.csv")->car_purchase
+library(dplyr)
+car_purchase %>% select(-1)->car_purchase
+library(caTools)
+sample.split(car_purchase$Purchased,SplitRatio=0.65)->split_values
+subset(car_purchase,split_values==T)->train_set
+subset(car_purchase,split_values==F)->test_set
+#loading RPART
+library(rpart)
+#Building classification model
+rpart(Purchased~.,data = train_set) -> mod_class
+predict(mod_class, test_set, type= "class") -> result_class
+table(test_set$Purchased, result_class)

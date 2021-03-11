@@ -1,0 +1,16 @@
+library(ggplot2)
+View(diamonds)
+library(caTools)
+sample.split(diamonds$price,SplitRatio = 0.65)->split_values
+subset(diamonds,split_values==T)->train_set
+subset(diamonds,split_values==F)->test_test
+#build model
+lm(price~.,data=train_set)->model
+predict(model,test_test)->result
+cbind(actual=test_test$price,predicted=result)->final_data
+as.data.frame(final_data)->final_data
+#View(final_data)
+(final_data$actual-final_data$predicted)->err
+cbind(final_data,err)->final_data
+rmse<-sqrt(mean(final_data$err^2))
+rmse
