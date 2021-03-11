@@ -1,0 +1,84 @@
+read.csv("C:/Users/Lenovo/Desktop/pokemon/pokemon.csv")->pokemon
+#View(pokemon)
+library(dplyr)
+pokemon %>% select(-1)->pokemon
+#rename cols
+colnames(pokemon)[2]<-"primary_type"
+colnames(pokemon)[3]<-"secondary_type"
+colnames(pokemon)[5]<-"health_points"
+colnames(pokemon)[8]<-"specail_attack"
+colnames(pokemon)[9]<-"special_defence"
+#View(pokemon)
+#understanding data set
+str(pokemon)
+as.factor(pokemon$Name)->pokemon$Name
+as.factor(pokemon$primary_type)->pokemon$primary_type
+as.factor(pokemon$secondary_type)->pokemon$primary_type
+as.factor(pokemon$Legendary)->pokemon$Legendary
+
+#primaryfunction
+table(pokemon$primary_type)
+#filtering
+library(dplyr)
+#waterpokemon
+pokemon %>% filter(primary_type=='water')->water_pokemon
+water_pokemon %>% filter(secondary_type=='psychic')->water_psychic_pokemon
+range(water_psychic_pokemon$Defense)
+water_pokemon %>% filter(water_psychic_pokemon$Defense==110)->my_water_pokemon
+#selecting grass
+pokemon %>% filter(primary_type=='grass')->grass_pokemon
+grass_pokemon %>% filter(secondary_type=='poison')->grass_poison_pokemon
+#range(water_psychic_pokemon$speed)
+grass_pokemon %>% filter(grass_poison_pokemon$Speed==90)->my_grass_pokemon
+#firepokemon
+pokemon %>% filter(primary_type=='fire')->fire_pokemon
+fire_pokemon %>% filter(secondary_type=='fighting')->fire_fighting_pokemon
+#range(water_psychic_pokemon$speed)
+fire_pokemon%>% filter(fire_fighting_pokemon$Attack==123)->my_fire_pokemon
+#bind
+rbind(my_water_pokemon,my_grass_pokemon,my_fire_pokemon)->mypokemons
+#regression
+library(caTools)
+sample.split(pokemon$Attack,SplitRatio = 0.65)->split_samples
+subset(pokemon,split_samples==T)->train_set
+subset(pokemon,split_samples==F)->test_set
+lm(pokemon$Attack~pokemon$Defense,data = train_set)->model
+predict(model,test_set)->result
+cbind(actual=pokemon$Attack,predicted=result)->final
+as.data.frame(final)->final
+#View(final)
+(final$predicted-final$actual)->err
+cbind(final,err)->final
+rmse<-sqrt(mean(final$err^2))
+rmse
+#attack 
+library(caTools)
+
+lm(pokemon$Attack~pokemon$Defense+pokemon$health_points+pokemon$Speed,data = train_set)->model1
+predict(model1,test_set)->result1
+cbind(actual=pokemon$Attack,predicted=result1)->final1
+as.data.frame(final1)->final1
+View(final1)
+(final1$predicted-final1$actual)->err1
+cbind(final1,err1)->final1
+rmse1<-sqrt(mean(final1$err1^2))
+rmse1
+#islegendary
+library(caTools)
+sample.split(pokemon$Legendary,SplitRatio = 0.65)->split_samp
+subset(pokemon,split_samp==T)->train
+subset(pokemon,split_samp==F)->test
+library(rpart)
+rpart(Legendary~.,data = train)->model2
+predict(model2,test,type = "class" )->res
+table(test$Legendary,res)
+library(caret)
+confusionMatrix(table(test$Legendary,res))
+#clss2
+
+library(rpart)
+rpart(Legendary~Speed+Defense+Attack,data = train)->model3
+predict(model3,test,type = "class" )->res1
+table(test$Legendary,res1)
+library(caret)
+confusionMatrix(table(test$Legendary,res1))
